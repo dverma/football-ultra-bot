@@ -2,7 +2,7 @@
 
 const Telegram = require("telegram-node-bot");
 
-class LiveController extends Telegram.TelegramBaseCallbackQueryController{
+class LiveController extends Telegram.TelegramBaseController{
     /**
      * @param {Scope} $
      */
