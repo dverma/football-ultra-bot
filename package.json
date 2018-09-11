@@ -1,0 +1,34 @@
+{
+  "name": "football-ultra-bot",
+  "version": "1.0.0",
+  "description": "A telegram bot( @FootballUltraBot ) for everything football!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
+    "redis": "^2.8.0",
+    "request": "^2.88.0",
+    "telegram-node-bot": "^4.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dverma/football-ultra-bot.git"
+  },
+  "keywords": [
+    "Football",
+    "calcio",
+    "serie-a",
+    "la-liga",
+    "premier-league",
+    "champions_league"
+  ],
+  "author": "Dhawal Verma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dverma/football-ultra-bot/issues"
+  },
+  "homepage": "https://github.com/dverma/football-ultra-bot#readme"
+}
