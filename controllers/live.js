@@ -26,3 +26,5 @@ class LiveController extends Telegram.TelegramBaseCallbackQueryController{
         };
     }
 }
+
+module.exports = LiveController;
