@@ -37,78 +37,93 @@ function callAPI(url, filters, callBack) {
     });
 }
 
-module.exports = {
-    writeScheduledMatches: function (competition) {
-        var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
-        var filter = {};
-        var matchDay = exports.readMatchDay(competition);
-        if (!matchDay) {
-            filter.dateFrom = tminus5;
-            filter.dateTo = tplus5;
-        } else {
-            filter.matchDay = matchDay;
+function writeScheduledMatches(competition) {
+    var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
+    var filter = {};
+    var matchDay = exports.readMatchDay(competition);
+    if (!matchDay) {
+        filter.dateFrom = tminus5;
+        filter.dateTo = tplus5;
+    } else {
+        filter.matchDay = matchDay;
+    }
+    callAPI(url, filter, function (data) {
+        var redisKey = competition + "_scheduled";
+        var result = [];
+        var value;
+        if (!data) {
+            value = "No data available.";
+        } else if (data.count > 0) {
+            var matches = data.matches;
+            matches.forEach(element => {
+                var match = element.homeTeam.name + " vs " + element.awayTeam.name;
+                if (element.score.fullTime.homeTeam !== null) {
+                    match += "\n " + element.score.fullTime.homeTeam + " - " + element.score.fullTime.awayTeam;
+                } else {
+                    match += "\n" + moment(element.utcDate).tz('America/Chicago').format("lll") + " CST" +
+                        "\n" + moment(element.utcDate).tz('Asia/Kolkata').format("lll") + " IST";
+                }
+                result.push(match);
+            });
+            value = result.join('\n');
         }
-        callAPI(url, filter, function (data) {
-            var redisKey = competition + "_scheduled";
-            var result = [];
-            var value;
-            if (!data) {
-                value = "No data available.";
-            } else if (data.count > 0) {
-                var matches = data.matches;
-                matches.forEach(element => {
-                    var match = element.homeTeam.name + " vs " + element.awayTeam.name;
-                    if (element.score.fullTime.homeTeam !== null) {
-                        match += "\n " + element.score.fullTime.homeTeam + " - " + element.score.fullTime.awayTeam;
-                    } else {
-                        match += "\n" + moment(element.utcDate).tz('America/Chicago').format("lll") + " CST" +
-                            "\n" + moment(element.utcDate).tz('Asia/Kolkata').format("lll") + " IST";
-                    }
-                    result.push(match);
-                });
-                value = result.join('\n');
-            }
+        console.log(redisKey + " " + value);
+        client.set(redisKey, value, 'EX', 60000);
+    });
+}
+
+function writeLiveMatches(competition) {
+    var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
+    var filter = {
+        status: 'LIVE'
+    };
+    callAPI(url, filter, function (data) {
+        var redisKey = competition + "_live";
+        var result = [];
+        if (data.count > 0) {
+            var matches = data.matches;
+            matches.forEach(element => {
+                var match = element.homeTeam.name + " vs " + element.awayTeam.name +
+                    "\n " + element.score.fullTime.homeTeam + " - " + element.score.fullTime.awayTeam;
+                result.push(match);
+            });
+        }
+        var value = result.join('\n');
+        console.log(redisKey + " " + value);
+        client.set(redisKey, value, 'EX', 30000);
+    });
+}
+
+function writeMatchDay() {
+    Object.keys(competitions).forEach(function (key) {
+        var url = API_ROOT_URL + 'competitions/' + key;
+        callAPI(url, null, function (data) {
+            var redisKey = key + "_matchDay";
+            var value = data.currentSeason.currentMatchday;
             console.log(redisKey + " " + value);
-            client.set(redisKey, value, 'EX', 60000);
+            client.set(redisKey, value, 'EX', 80000);
         });
-    },
+    });
+}
+
+module.exports = {
     readScheduledMatches: function (competition, cb) {
         var redisKey = competition + '_scheduled';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
-                exports.writeScheduledMatches(competition);
+                writeScheduledMatches(competition);
                 cb("Sorry, but can you please try again!");
             } else {
                 cb(reply.toString());
             }
         });
     },
-    writeLiveMatches: function (competition) {
-        var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
-        var filter = {
-            status: 'LIVE'
-        };
-        callAPI(url, filter, function (data) {
-            var redisKey = competition + "_live";
-            var result = [];
-            if (data.count > 0) {
-                var matches = data.matches;
-                matches.forEach(element => {
-                    var match = element.homeTeam.name + " vs " + element.awayTeam.name +
-                        "\n " + element.score.fullTime.homeTeam + " - " + element.score.fullTime.awayTeam;
-                    result.push(match);
-                });
-            }
-            var value = result.join('\n');
-            console.log(redisKey + " " + value);
-            client.set(redisKey, value, 'EX', 30000);
-        });
-    },
-    readLiveMatches: function (competition) {
+
+    readLiveMatches: function (competition, cb) {
         var redisKey = competition + '_live';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
-                exports.writeScheduledMatches(competition);
+                writeScheduledMatches(competition);
                 cb("Sorry, but can you please try again!");
             } else {
                 cb(reply.toString());
@@ -127,22 +142,11 @@ module.exports = {
     readTopScorers: function (competition) {
 
     },
-    writeMatchDay: function () {
-        Object.keys(competitions).forEach(function (key) {
-            var url = API_ROOT_URL + 'competitions/' + key;
-            callAPI(url, null, function (data) {
-                var redisKey = key + "_matchDay";
-                var value = data.currentSeason.currentMatchday;
-                console.log(redisKey + " " + value);
-                client.set(redisKey, value, 'EX', 80000);
-            });
-        });
-    },
     readMatchDay: function (competition) {
         var redisKey = competition + '_matchDay';
         var matchDay = client.get(redisKey);
         if (!matchDay) {
-            exports.writeMatchDay();
+            writeMatchDay();
             matchDay = client.get(redisKey);
         }
         return matchDay;
