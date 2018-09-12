@@ -26,12 +26,13 @@ function callAPI(url, filters, callBack) {
             'X-Auth-Token': process.env.FOOTBALL_DATA_API_TOKEN
         }
     };
-    var responseJson;
+    console.log(options);
     request(options, function (error, response, body) {
+        var responseJson;
         if (!error && response.statusCode == 200) {
             responseJson = JSON.parse(body);
         } else if (error) {
-            console.error(error);
+            console.log(error);
         }
         callBack(responseJson);
     });
@@ -41,18 +42,20 @@ function writeScheduledMatches(competition) {
     var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
     var filter = {};
     readMatchDay(competition, function (matchDay) {
+        console.log(competition + " " + matchDay);
         if (!matchDay) {
             filter.dateFrom = tminus5;
             filter.dateTo = tplus5;
         } else {
             filter.matchDay = matchDay;
         }
+        console.log(filter);
         callAPI(url, filter, function (data) {
             var redisKey = competition + "_scheduled";
             var result = [];
             var value;
             if (!data) {
-                value = "No data available.";
+                value = "No data available. Please try again.";
             } else if (data.count > 0) {
                 var matches = data.matches;
                 matches.forEach(element => {
@@ -125,8 +128,16 @@ module.exports = {
         var redisKey = competition + '_scheduled';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
+                console.log(err);
                 writeScheduledMatches(competition);
-                cb("Sorry, but can you please try again!");
+                client.get(redisKey, function (err1, reply1) {
+                    if (!reply1) {
+                        console.log(err1);
+                        cb("Sorry, please try again.");
+                    } else {
+                        cb(reply1.toString());
+                    }
+                });
             } else {
                 cb(reply.toString());
             }
@@ -137,8 +148,16 @@ module.exports = {
         var redisKey = competition + '_live';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
+                console.log(err);
                 writeLiveMatches(competition);
-                cb("Sorry, but can you please try again!");
+                client.get(redisKey, function (err1, reply1) {
+                    if (!reply1) {
+                        console.log(err1);
+                        cb("Sorry, please try again.");
+                    } else {
+                        cb(reply1.toString());
+                    }
+                });
             } else {
                 cb(reply.toString());
             }
