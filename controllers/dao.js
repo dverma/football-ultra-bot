@@ -22,6 +22,7 @@ var tminus5 = moment().add(-5, "days").format("YYYY-MM-DD");
 var tplus5 = moment().add(5, "days").format("YYYY-MM-DD");
 
 function callAPI(url, filters, callBack) {
+    console.log("Inside callAPI");
     var options = {
         method: 'GET',
         url: url,

@@ -29,5 +29,5 @@ setInterval(function() {
 }, 300000);
 
 setInterval(function() {
-    DAO.writeMatchDay;
+    DAO.writeMatchDay();
 }, 60000);
