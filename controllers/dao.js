@@ -41,7 +41,7 @@ module.exports = {
     writeScheduledMatches: function (competition) {
         var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
         var filter = {};
-        var matchDay = this.readMatchDay(competition);
+        var matchDay = exports.readMatchDay(competition);
         if (!matchDay) {
             filter.dateFrom = tminus5;
             filter.dateTo = tplus5;
@@ -76,7 +76,7 @@ module.exports = {
         var redisKey = competition + '_scheduled';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
-                this.writeScheduledMatches(competition);
+                exports.writeScheduledMatches(competition);
                 cb("Sorry, but can you please try again!");
             } else {
                 cb(reply.toString());
@@ -108,7 +108,7 @@ module.exports = {
         var redisKey = competition + '_live';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
-                this.writeScheduledMatches(competition);
+                exports.writeScheduledMatches(competition);
                 cb("Sorry, but can you please try again!");
             } else {
                 cb(reply.toString());
@@ -142,7 +142,7 @@ module.exports = {
         var redisKey = competition + '_matchDay';
         var matchDay = client.get(redisKey);
         if (!matchDay) {
-            this.writeMatchDay();
+            exports.writeMatchDay();
             matchDay = client.get(redisKey);
         }
         return matchDay;
