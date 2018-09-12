@@ -40,7 +40,7 @@ function callAPI(url, filters, callBack) {
 function writeScheduledMatches(competition) {
     var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
     var filter = {};
-    exports.readMatchDay(competition, function (matchDay) {
+    readMatchDay(competition, function (matchDay) {
         if (!matchDay) {
             filter.dateFrom = tminus5;
             filter.dateTo = tplus5;
@@ -107,6 +107,19 @@ function writeMatchDay() {
     });
 }
 
+function readMatchDay(competition, cb) {
+    var redisKey = competition + '_matchDay';
+    client.get(redisKey, function (err, reply) {
+        if (!reply) {
+            console.log(err);
+            writeMatchDay();
+            cb(null);
+        } else {
+            cb(reply);
+        }
+    });
+}
+
 module.exports = {
     readScheduledMatches: function (competition, cb) {
         var redisKey = competition + '_scheduled';
@@ -142,17 +155,5 @@ module.exports = {
     },
     readTopScorers: function (competition) {
 
-    },
-    readMatchDay: function (competition, cb) {
-        var redisKey = competition + '_matchDay';
-        client.get(redisKey, function (err, reply) {
-            if (!reply) {
-                console.log(err);
-                writeMatchDay();
-                cb();
-            } else {
-                cb(reply);
-            }
-        });
     }
 };
