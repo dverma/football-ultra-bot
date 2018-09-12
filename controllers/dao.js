@@ -47,7 +47,7 @@ function writeScheduledMatches(competition) {
             filter.dateFrom = tminus5;
             filter.dateTo = tplus5;
         } else {
-            filter.matchDay = matchDay;
+            filter.matchday = parseInt(matchDay);
         }
         console.log(filter);
         callAPI(url, filter, function (data) {
@@ -71,7 +71,7 @@ function writeScheduledMatches(competition) {
                 value = result.join('\n');
             }
             console.log(redisKey + " " + value);
-            client.set(redisKey, value, 'EX', 60000);
+            client.set(redisKey, value, 'EX', 300000);
         });
     });
 }
