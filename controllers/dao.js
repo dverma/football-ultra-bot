@@ -40,35 +40,36 @@ function callAPI(url, filters, callBack) {
 function writeScheduledMatches(competition) {
     var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
     var filter = {};
-    var matchDay = exports.readMatchDay(competition);
-    if (!matchDay) {
-        filter.dateFrom = tminus5;
-        filter.dateTo = tplus5;
-    } else {
-        filter.matchDay = matchDay;
-    }
-    callAPI(url, filter, function (data) {
-        var redisKey = competition + "_scheduled";
-        var result = [];
-        var value;
-        if (!data) {
-            value = "No data available.";
-        } else if (data.count > 0) {
-            var matches = data.matches;
-            matches.forEach(element => {
-                var match = element.homeTeam.name + " vs " + element.awayTeam.name;
-                if (element.score.fullTime.homeTeam !== null) {
-                    match += "\n " + element.score.fullTime.homeTeam + " - " + element.score.fullTime.awayTeam;
-                } else {
-                    match += "\n" + moment(element.utcDate).tz('America/Chicago').format("lll") + " CST" +
-                        "\n" + moment(element.utcDate).tz('Asia/Kolkata').format("lll") + " IST";
-                }
-                result.push(match);
-            });
-            value = result.join('\n');
+    exports.readMatchDay(competition, function (matchDay) {
+        if (!matchDay) {
+            filter.dateFrom = tminus5;
+            filter.dateTo = tplus5;
+        } else {
+            filter.matchDay = matchDay;
         }
-        console.log(redisKey + " " + value);
-        client.set(redisKey, value, 'EX', 60000);
+        callAPI(url, filter, function (data) {
+            var redisKey = competition + "_scheduled";
+            var result = [];
+            var value;
+            if (!data) {
+                value = "No data available.";
+            } else if (data.count > 0) {
+                var matches = data.matches;
+                matches.forEach(element => {
+                    var match = element.homeTeam.name + " vs " + element.awayTeam.name;
+                    if (element.score.fullTime.homeTeam !== null) {
+                        match += "\n " + element.score.fullTime.homeTeam + " - " + element.score.fullTime.awayTeam;
+                    } else {
+                        match += "\n" + moment(element.utcDate).tz('America/Chicago').format("lll") + " CST" +
+                            "\n" + moment(element.utcDate).tz('Asia/Kolkata').format("lll") + " IST";
+                    }
+                    result.push(match);
+                });
+                value = result.join('\n');
+            }
+            console.log(redisKey + " " + value);
+            client.set(redisKey, value, 'EX', 60000);
+        });
     });
 }
 
@@ -123,7 +124,7 @@ module.exports = {
         var redisKey = competition + '_live';
         client.get(redisKey, function (err, reply) {
             if (!reply) {
-                writeScheduledMatches(competition);
+                writeLiveMatches(competition);
                 cb("Sorry, but can you please try again!");
             } else {
                 cb(reply.toString());
@@ -142,13 +143,16 @@ module.exports = {
     readTopScorers: function (competition) {
 
     },
-    readMatchDay: function (competition) {
+    readMatchDay: function (competition, cb) {
         var redisKey = competition + '_matchDay';
-        var matchDay = client.get(redisKey);
-        if (!matchDay) {
-            writeMatchDay();
-            matchDay = client.get(redisKey);
-        }
-        return matchDay;
+        client.get(redisKey, function (err, reply) {
+            if (!reply) {
+                console.log(err);
+                writeMatchDay();
+                cb();
+            } else {
+                cb(reply);
+            }
+        });
     }
 };
