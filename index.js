@@ -1,11 +1,11 @@
 'use strict';
 
 const Telegram = require('telegram-node-bot');
-// const tg = new Telegram.Telegram(process.env.BOT_API_TOKEN,{
-//     webAdmin: {
-//         port: process.env.PORT
-//     }
-// });
+const tg = new Telegram.Telegram(process.env.BOT_API_TOKEN,{
+    webAdmin: {
+        port: process.env.PORT
+    }
+});
 
 
 //const tg = new Telegram.Telegram('622194918:AAFVTR7BIIwy8HMPPqfH1E8gcun2aiaCbe0');
