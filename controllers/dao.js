@@ -1,6 +1,6 @@
 'use strict';
 
-const client = require("redis").createClient(process.env.REDIS_URL);
+//const client = require("redis").createClient(process.env.REDIS_URL);
 const moment = require("moment-timezone");
 const request = require("request");
 
@@ -35,6 +35,7 @@ function callAPI(url, filters, callBack) {
     request(options, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             responseJson = JSON.parse(body);
+            console.log(responseJson);
         } else if (error) {
             console.error(error);
         }
@@ -68,13 +69,15 @@ module.exports = {
 
     },
     writeMatchDay: function () {
-        Object.keys(competitions).forEach(function (key) {
-            var url = API_ROOT_URL + 'competitions/' + key;
-            callAPI(url,null,function(data){
-                var redisKey = key + "_matchDay";
-                var value = data.currentSeason.currentMatchday;
-                client.set(redisKey,value);
-            }); 
-        });
+        // Object.keys(competitions).forEach(function (key) {
+        //     var url = API_ROOT_URL + 'competitions/' + key;
+        //     callAPI(url,null,function(data){
+        //         var redisKey = key + "_matchDay";
+        //         var value = data.currentSeason.currentMatchday;
+        //         console.log(redisKey+" "+value);
+        //         //client.set(redisKey,value);
+        //     }); 
+        // });
+        console.log(1);
     }
 };
