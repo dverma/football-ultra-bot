@@ -6,11 +6,6 @@ const moment = require("moment-timezone");
 const request = require("request");
 
 const API_ROOT_URL = "http://api.football-data.org/v2/";
-const REDIS_STORE_KEYS = {
-    "SCHEDULED": 1,
-    "LIVE": 2,
-    "STANDINGS": 3
-};
 const competitions = {
     "SA": 2019, // Serie A
     "PD": 2014, // La Liga
@@ -18,7 +13,6 @@ const competitions = {
     "CL": 2001 // Champions League
 };
 
-//var today = moment().format("YYYY-MM-DD");
 var tminus5 = moment().add(-5, "days").format("YYYY-MM-DD");
 var tplus5 = moment().add(5, "days").format("YYYY-MM-DD");
 
@@ -78,14 +72,16 @@ module.exports = {
             client.set(redisKey, value, 'EX', 60000);
         });
     },
-    readScheduledMatches: function (competition) {
+    readScheduledMatches: function (competition, cb) {
         var redisKey = competition + '_scheduled';
-        var matches = client.get(redisKey);
-        if (!matches) {
-            this.writeScheduledMatches(competition);
-            matches = client.get(redisKey);
-        }
-        return matches;
+        client.get(redisKey, function (err, reply) {
+            if (!reply) {
+                this.writeScheduledMatches(competition);
+                cb("Sorry, but can you please try again!");
+            } else {
+                cb(reply.toString());
+            }
+        });
     },
     writeLiveMatches: function (competition) {
         var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
@@ -107,16 +103,17 @@ module.exports = {
             console.log(redisKey + " " + value);
             client.set(redisKey, value, 'EX', 30000);
         });
-
     },
     readLiveMatches: function (competition) {
         var redisKey = competition + '_live';
-        var matches = client.get(redisKey);
-        if (!matches) {
-            this.writeLiveMatches(competition);
-            matches = client.get(redisKey);
-        }
-        return matches;
+        client.get(redisKey, function (err, reply) {
+            if (!reply) {
+                this.writeScheduledMatches(competition);
+                cb("Sorry, but can you please try again!");
+            } else {
+                cb(reply.toString());
+            }
+        });
     },
     writeStandings: function (competition) {
 

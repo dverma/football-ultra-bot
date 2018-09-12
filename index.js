@@ -10,11 +10,12 @@ const tg = new Telegram.Telegram(process.env.BOT_API_TOKEN, {
 const AboutController = require('./controllers/about');
 const OtherwiseController = require('./controllers/otherwise');
 const LiveController = require('./controllers/live');
+const FixturesController = require('./controllers/fixtures');
 
 tg.router.when(new Telegram.TextCommand('/about', 'aboutCommand'), new AboutController())
     .when(new Telegram.TextCommand('/start', 'aboutCommand'), new AboutController())
     .when(new Telegram.TextCommand('/live', 'liveCommand'), new LiveController())
-    //.when(new Telegram.TextCommand('/fixtures', 'fixturesCommand'), new FixturesController())
+    .when(new Telegram.TextCommand('/fixtures', 'fixturesCommand'), new FixturesController())
     //.when(new Telegram.TextCommand('/standings', 'standingsCommand'), new StandingsController())
     //.when(new Telegram.TextCommand('/scorers', 'scorersCommand'), new ScorersController())
     .otherwise(new OtherwiseController());

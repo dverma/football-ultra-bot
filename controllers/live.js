@@ -11,20 +11,25 @@ class LiveController extends Telegram.TelegramBaseController {
             message: 'Select a competition:',
             layout: [3, 1, 1],
             'Serie A': () => {
-                var data = DAO.readLiveMatches('SA');
-                $.sendMessage('--- Serie A ---\n' + data);
+                DAO.readLiveMatches('SA', function (data) {
+                    $.sendMessage('- Italian Serie A -\n' + data);
+                });
+
             },
             'La Liga': () => {
-                var data = DAO.readLiveMatches('PD');
-                $.sendMessage('--- Serie A ---\n' + data);
+                DAO.readLiveMatches('PD', function (data) {
+                    $.sendMessage('- Spanish La Liga -\n' + data);
+                });
             },
             'Premier League': () => {
-                var data = DAO.readLiveMatches('PL');
-                $.sendMessage('--- Serie A ---\n' + data);
+                DAO.readLiveMatches('PL', function (data) {
+                    $.sendMessage('- English Premier League -\n' + data);
+                });
             },
             'UEFA Champions League': () => {
-                var data = DAO.readLiveMatches('CL');
-                $.sendMessage('--- Serie A ---\n' + data);
+                DAO.readLiveMatches('CL', function (data) {
+                    $.sendMessage('- UEFA Champions League -\n' + data);
+                });
             },
             'Exit': () => {
                 $.sendMessage('Hasta la vista, baby!');
