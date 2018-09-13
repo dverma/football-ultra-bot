@@ -25,7 +25,7 @@ class LiveController extends Telegram.TelegramBaseController {
                 {
                     text: 'La Liga',
                     callback: (callBackQuery, message) => {
-                        DAO.readLiveMatches('PL', function (data) {
+                        DAO.readLiveMatches('PD', function (data) {
                             $.api.editMessageText('- Spanish La Liga -\n\n' + data, {
                                 chat_id: $.chatId,
                                 message_id: message.messageId

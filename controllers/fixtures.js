@@ -26,7 +26,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                 {
                     text: 'La Liga',
                     callback: (callBackQuery, message) => {
-                        DAO.readScheduledMatches('PL', function (data) {
+                        DAO.readScheduledMatches('PD', function (data) {
                             $.api.editMessageText('- Spanish La Liga -\n\n' + data, {
                                 chat_id: $.chatId,
                                 message_id: message.messageId
