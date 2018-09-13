@@ -138,7 +138,6 @@ module.exports = {
             }
         });
     },
-
     readLiveMatches: function (competition, cb) {
         var redisKey = competition + '_live';
         client.get(redisKey, function (err, reply) {
