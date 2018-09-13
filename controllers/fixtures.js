@@ -10,9 +10,9 @@ class FixturesController extends Telegram.TelegramBaseController {
         $.runInlineMenu({
             layout: 2,
             method: 'sendMessage',
-            params: ['option'],
+            params: ['text'],
             menu: [{
-                    option: 'Serie A',
+                    text: 'Serie A',
                     callBack: () => {
                         DAO.readScheduledMatches('SA', function (data) {
                             $.sendMessage('- Italian Serie A -\n' + data);
@@ -20,7 +20,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                     }
                 },
                 {
-                    option: 'La Liga',
+                    text: 'La Liga',
                     callBack: () => {
                         DAO.readScheduledMatches('PD', function (data) {
                             $.sendMessage('- Spanish La Liga -\n' + data);
@@ -28,7 +28,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                     }
                 },
                 {
-                    option: 'Premier League',
+                    text: 'Premier League',
                     callBack: () => {
                         DAO.readScheduledMatches('PL', function (data) {
                             $.sendMessage('- English Premier League -\n' + data);
@@ -36,7 +36,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                     }
                 },
                 {
-                    option: 'UEFA Champions League',
+                    text: 'UEFA Champions League',
                     callBack: () => {
                         DAO.readScheduledMatches('CL', function (data) {
                             $.sendMessage('- UEFA Champions League -\n' + data);
@@ -44,7 +44,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                     }
                 },
                 {
-                    option: 'Exit',
+                    text: 'Exit',
                     callBack: () => {
                         $.sendMessage('Hasta la vista, baby!');
                     }
