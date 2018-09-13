@@ -38,7 +38,7 @@ function callAPI(url, filters, callBack) {
     });
 }
 
-function writeScheduledMatches(competition,cb) {
+function writeScheduledMatches(competition, cb) {
     var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
     var filter = {};
     readMatchDay(competition, function (matchDay) {
@@ -72,12 +72,12 @@ function writeScheduledMatches(competition,cb) {
             }
             cb(value);
             console.log(redisKey + " " + value);
-            client.set(redisKey, value, 'EX', 300000);
+            client.set(redisKey, value, 'EX', 47);
         });
     });
 }
 
-function writeLiveMatches(competition,cb) {
+function writeLiveMatches(competition, cb) {
     var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
     var filter = {
         status: 'LIVE'
@@ -96,7 +96,7 @@ function writeLiveMatches(competition,cb) {
         var value = result.join('\n\n');
         cb(value);
         console.log(redisKey + " " + value);
-        client.set(redisKey, value, 'EX', 30000);
+        client.set(redisKey, value, 'EX', 17);
     });
 }
 
@@ -107,7 +107,7 @@ function writeMatchDay() {
             var redisKey = key + "_matchDay";
             var value = data.currentSeason.currentMatchday;
             console.log(redisKey + " " + value);
-            client.set(redisKey, value, 'EX', 80000);
+            client.set(redisKey, value, 'EX', 86000);
         });
     });
 }
@@ -129,8 +129,8 @@ module.exports = {
     readScheduledMatches: function (competition, cb) {
         var redisKey = competition + '_scheduled';
         client.get(redisKey, function (err, reply) {
-            if (!reply || reply==null || reply==='null') {
-                writeScheduledMatches(competition,function(data){
+            if (!reply || reply == null || reply === 'null') {
+                writeScheduledMatches(competition, function (data) {
                     cb(data);
                 });
             } else {
@@ -142,8 +142,8 @@ module.exports = {
     readLiveMatches: function (competition, cb) {
         var redisKey = competition + '_live';
         client.get(redisKey, function (err, reply) {
-            if (!reply || reply==null || reply==='null') {
-                writeLiveMatches(competition,function(data){
+            if (!reply || reply == null || reply === 'null') {
+                writeLiveMatches(competition, function (data) {
                     cb(data);
                 });
             } else {
