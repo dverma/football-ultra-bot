@@ -14,7 +14,7 @@ class FixturesController extends Telegram.TelegramBaseController {
             params: ['Select a competition'],
             menu: [{
                     text: 'Serie A',
-                    callBack: (callBackQuery, message) => {
+                    callback: (callBackQuery, message) => {
                         DAO.readScheduledMatches('SA', function (data) {
                             $.api.editMessageText('- Italian Serie A -\n\n' + data, {
                                 chat_id: $.chatId,
@@ -25,7 +25,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                 },
                 {
                     text: 'La Liga',
-                    callBack: (callBackQuery, message) => {
+                    callback: (callBackQuery, message) => {
                         DAO.readScheduledMatches('PL', function (data) {
                             $.api.editMessageText('- Spanish La Liga -\n\n' + data, {
                                 chat_id: $.chatId,
@@ -47,7 +47,7 @@ class FixturesController extends Telegram.TelegramBaseController {
                 },
                 {
                     text: 'Champions League',
-                    callBack: (callBackQuery, message) => {
+                    callback: (callBackQuery, message) => {
                         DAO.readScheduledMatches('CL', function (data) {
                             $.api.editMessageText('- UEFA Champions League -\n\n' + data, {
                                 chat_id: $.chatId,

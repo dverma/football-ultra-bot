@@ -13,7 +13,7 @@ class LiveController extends Telegram.TelegramBaseController {
             params: ['Select a competition'],
             menu: [{
                     text: 'Serie A',
-                    callBack: (callBackQuery, message) => {
+                    callback: (callBackQuery, message) => {
                         DAO.readLiveMatches('SA', function (data) {
                             $.api.editMessageText('- Italian Serie A -\n\n' + data, {
                                 chat_id: $.chatId,
@@ -24,7 +24,7 @@ class LiveController extends Telegram.TelegramBaseController {
                 },
                 {
                     text: 'La Liga',
-                    callBack: (callBackQuery, message) => {
+                    callback: (callBackQuery, message) => {
                         DAO.readLiveMatches('PL', function (data) {
                             $.api.editMessageText('- Spanish La Liga -\n\n' + data, {
                                 chat_id: $.chatId,
@@ -46,7 +46,7 @@ class LiveController extends Telegram.TelegramBaseController {
                 },
                 {
                     text: 'Champions League',
-                    callBack: (callBackQuery, message) => {
+                    callback: (callBackQuery, message) => {
                         DAO.readLiveMatches('CL', function (data) {
                             $.api.editMessageText('- UEFA Champions League -\n\n' + data, {
                                 chat_id: $.chatId,
