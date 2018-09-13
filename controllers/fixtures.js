@@ -13,41 +13,48 @@ class FixturesController extends Telegram.TelegramBaseController {
             params: ['text'],
             menu: [{
                     text: 'Serie A',
-                    callBack: () => {
-                        DAO.readScheduledMatches('SA', function (data) {
-                            $.sendMessage('- Italian Serie A -\n' + data);
-                        });
+                    callBack: (callBackQuery, message) => {
+
+                        console.log("\n\n\n-------------");
+                        console.log(callBackQuery);
+                        console.log("-------------\n\n\n");
+                        // DAO.readScheduledMatches('SA', function (data) {
+                        //     $.sendMessage('- Italian Serie A -\n' + data);
+                        // });
                     }
                 },
                 {
                     text: 'La Liga',
-                    callBack: () => {
+                    callBack: (callBackQuery, message) => {
+
                         DAO.readScheduledMatches('PD', function (data) {
-                            $.sendMessage('- Spanish La Liga -\n' + data);
+                            message('- Spanish La Liga -\n' + data);
                         });
                     }
                 },
                 {
                     text: 'Premier League',
-                    callBack: () => {
+                    callBack: (callBackQuery, message) => {
+
                         DAO.readScheduledMatches('PL', function (data) {
-                            $.sendMessage('- English Premier League -\n' + data);
+                            callBackQuery('- English Premier League -\n' + data);
                         });
                     }
                 },
                 {
                     text: 'UEFA Champions League',
-                    callBack: () => {
-                        DAO.readScheduledMatches('CL', function (data) {
-                            $.sendMessage('- UEFA Champions League -\n' + data);
-                        });
+                    callBack: (callBackQuery, message) => {
+                        console.log("\n\n\n-------------");
+                        console.log(message);
+                        console.log("-------------\n\n\n");
+                        // DAO.readScheduledMatches('CL', function (data) {
+                        //     $.sendMessage('- UEFA Champions League -\n' + data);
+                        // });
                     }
                 },
                 {
                     text: 'Exit',
-                    callBack: () => {
-                        $.sendMessage('Hasta la vista, baby!');
-                    }
+                    message: 'Hasta la vista, baby!'
                 }
             ]
         });
