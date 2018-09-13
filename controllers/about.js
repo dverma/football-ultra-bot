@@ -10,8 +10,8 @@ class AboutController extends Telegram.TelegramBaseController {
     aboutHandler($) {
         $.sendMessage("Greetings Earthling!\nFootball Ultra Bot is at your service." +
             "\nUse the following commands:" +
-            "\n- /live : live scores from the league you select" +
-            "\n- /fixtures : list of fixtures from the current matchday" +
+            "\n- /live : Scores from live games" +
+            "\n- /fixtures : Fixtures from the current matchday" +
             "\n- /standings : League table" +
             "\n- /scorers : Top 10 goal scoreres in the league");
     }

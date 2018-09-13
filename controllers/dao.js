@@ -94,6 +94,8 @@ function writeLiveMatches(competition, cb) {
             });
         }
         var value = result.join('\n\n');
+        if (value === '' || !value)
+            value = "No live matches going on."
         cb(value);
         console.log(redisKey + " " + value);
         client.set(redisKey, value, 'EX', 17);
