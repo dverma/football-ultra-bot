@@ -9,12 +9,12 @@ const API_ROOT_URL = "http://api.football-data.org/v2/";
 const competitions = {
     "SA": 2019, // Serie A
     "PD": 2014, // La Liga
-    "PL": 2021, // Premier League
-    "CL": 2001 // Champions League
+    "PL": 2021 // Premier League
+    //"CL": 2001 // Champions League
 };
 
-var tminus5 = moment().add(-5, "days").format("YYYY-MM-DD");
-var tplus5 = moment().add(5, "days").format("YYYY-MM-DD");
+var tminus10 = moment().add(-10, "days").format("YYYY-MM-DD");
+var tplus10 = moment().add(10, "days").format("YYYY-MM-DD");
 
 function callAPI(url, filters, callBack) {
     console.log("Inside callAPI");
@@ -44,8 +44,8 @@ function writeScheduledMatches(competition, cb) {
     readMatchDay(competition, function (matchDay) {
         console.log(competition + " " + matchDay);
         if (!matchDay) {
-            filter.dateFrom = tminus5;
-            filter.dateTo = tplus5;
+            filter.dateFrom = tminus10;
+            filter.dateTo = tplus10;
         } else {
             filter.matchday = parseInt(matchDay);
         }
