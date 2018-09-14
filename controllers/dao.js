@@ -110,7 +110,7 @@ function writeStandings(competition, cb){
         standings.forEach(standing => {
             if(standing.type==='TOTAL'){
                 var grp = standing.group;
-                var rows = standing.total;
+                var rows = standing.table;
                 if(competition==='CL'){
                     result.push(grp);
                 }
