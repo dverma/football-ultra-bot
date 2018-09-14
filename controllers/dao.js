@@ -212,7 +212,7 @@ module.exports = {
             }
         });
     },
-    readTopScorers: function (competition) {
+    readTopScorers: function (competition,cb) {
         var redisKey = competition+'_scorers';
         client.get(redisKey, function (err, reply) {
             if (!reply || reply == null || reply === 'null') {
