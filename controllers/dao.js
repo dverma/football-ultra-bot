@@ -109,7 +109,7 @@ function writeStandings(competition, cb){
         var standings = data.standings;
         standings.forEach(standing => {
             if(standing.type==='TOTAL'){
-                var grp = standing.group;
+                var grp = '\n'+standing.group;
                 var rows = standing.table;
                 if(competition==='CL'){
                     result.push(grp);
@@ -119,17 +119,17 @@ function writeStandings(competition, cb){
                         +"\nP "+element.playedGames+" "
                         +"W "+element.won+" "
                         +"D "+element.draw+" "
-                        +"L "+element.loss+" "
-                        +"P "+element.points+" "
+                        +"L "+element.lost+" "
+                        +"Pts "+element.points+" "
                         +"GF "+element.goalsFor+" "
                         +"GA "+element.goalsAgainst;
                     result.push(row);
                 });
             }
         });
-        var value = result.join('\n');
+        var value = result.join('\n\n');
         cb(value);
-        client.set(redisKey,value,'EX', 900);
+        client.set(redisKey,value,'EX', 60);
     });
 }
 
@@ -143,10 +143,11 @@ function writeTopScorers(competition,cb){
             var s = scorer.player.name+ " "+scorer.team.name+ " "+ scorer.numberOfGoals;
             result.push(s);
         });
+        var value = result.join('\n');
+        cb(value);
+        client.set(redisKey,value,'EX', 900);
     });
-    var value = result.join('\n');
-    cb(value);
-    client.set(redisKey,value,'EX', 900);
+    
 }
 
 function writeMatchDay() {
