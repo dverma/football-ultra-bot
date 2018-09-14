@@ -9,8 +9,8 @@ const API_ROOT_URL = "http://api.football-data.org/v2/";
 const competitions = {
     "SA": 2019, // Serie A
     "PD": 2014, // La Liga
-    "PL": 2021 // Premier League
-    //"CL": 2001 // Champions League
+    "PL": 2021, // Premier League
+    "CL": 2001 // Champions League
 };
 
 var tminus10 = moment().add(-10, "days").format("YYYY-MM-DD");
@@ -42,14 +42,14 @@ function writeScheduledMatches(competition, cb) {
     var url = API_ROOT_URL + 'competitions/' + competition + "/matches";
     var filter = {};
     readMatchDay(competition, function (matchDay) {
-        console.log(competition + " " + matchDay);
+        //console.log(competition + " " + matchDay);
         if (!matchDay) {
             filter.dateFrom = tminus10;
             filter.dateTo = tplus10;
         } else {
             filter.matchday = parseInt(matchDay);
         }
-        console.log(filter);
+        //console.log(filter);
         callAPI(url, filter, function (data) {
             var redisKey = competition + "_scheduled";
             var result = [];
@@ -71,7 +71,7 @@ function writeScheduledMatches(competition, cb) {
                 value = result.join('\n\n');
             }
             cb(value);
-            console.log(redisKey + " " + value);
+            //console.log(redisKey + " " + value);
             client.set(redisKey, value, 'EX', 47);
         });
     });
@@ -97,9 +97,56 @@ function writeLiveMatches(competition, cb) {
         if (value === '' || !value)
             value = "No live matches going on."
         cb(value);
-        console.log(redisKey + " " + value);
+        //console.log(redisKey + " " + value);
         client.set(redisKey, value, 'EX', 17);
     });
+}
+function writeStandings(competition, cb){
+    var url = API_ROOT_URL + 'competitions/' + competition + "/standings";
+    callAPI(url, filter, function (data) {
+        var redisKey = competition + "_live";
+        var result = [];
+        var standings = data.standings;
+        standings.forEach(standing => {
+            if(standing.type==='TOTAL'){
+                var grp = standing.group;
+                var rows = standing.total;
+                if(competition==='CL'){
+                    result.push(grp);
+                }
+                rows.forEach(element => {
+                    var row = element.position+". "+element.team.name
+                        +"\nP "+element.playedGames+" "
+                        +"W "+element.won+" "
+                        +"D "+element.draw+" "
+                        +"L "+element.loss+" "
+                        +"P "+element.points+" "
+                        +"GF "+element.goalsFor+" "
+                        +"GA "+element.goalsAgainst;
+                    result.push(row);
+                });
+            }
+        });
+        var value = result.join('\n');
+        cb(value);
+        client.set(redisKey,value,'EX', 900);
+    });
+}
+
+function writeTopScorers(competition,cb){
+    var url = API_ROOT_URL + 'competitions/' + competition + "/scorers";
+    callAPI(url, filter, function (data) {
+        var redisKey = competition + "_scorers";
+        var result = [];
+        var scorers = data.scorers;
+        scorers.forEach(scorer => {
+            var s = scorer.player.name+ " "+scorer.team.name+ " "+ scorer.numberOfGoals;
+            result.push(s);
+        });
+    });
+    var value = result.join('\n');
+    cb(value);
+    client.set(redisKey,value,'EX', 900);
 }
 
 function writeMatchDay() {
@@ -152,16 +199,28 @@ module.exports = {
             }
         });
     },
-    writeStandings: function (competition) {
-
-    },
-    readStandings: function (competition) {
-
-    },
-    writeTopScorers: function (competition) {
-
+    readStandings: function (competition, cb) {
+        var redisKey = competition+'_standings';
+        client.get(redisKey, function (err, reply) {
+            if (!reply || reply == null || reply === 'null') {
+                writeStandings(competition, function (data) {
+                    cb(data);
+                });
+            } else {
+                cb(reply.toString());
+            }
+        });
     },
     readTopScorers: function (competition) {
-
+        var redisKey = competition+'_scorers';
+        client.get(redisKey, function (err, reply) {
+            if (!reply || reply == null || reply === 'null') {
+                writeTopScorers(competition, function (data) {
+                    cb(data);
+                });
+            } else {
+                cb(reply.toString());
+            }
+        });
     }
 };

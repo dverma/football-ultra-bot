@@ -11,16 +11,16 @@ const AboutController = require('./controllers/about');
 const OtherwiseController = require('./controllers/otherwise');
 const LiveController = require('./controllers/live');
 const FixturesController = require('./controllers/fixtures');
+const StandingsController = require('./controllers/standings');
+const ScorersController = require('./controllers/scorers');
 
 tg.router.when(new Telegram.TextCommand('/about', 'aboutCommand'), new AboutController())
     .when(new Telegram.TextCommand('/start', 'aboutCommand'), new AboutController())
     .when(new Telegram.TextCommand('/live', 'liveCommand'), new LiveController())
     .when(new Telegram.TextCommand('/fixtures', 'fixturesCommand'), new FixturesController())
-    //.when(new Telegram.TextCommand('/standings', 'standingsCommand'), new StandingsController())
-    //.when(new Telegram.TextCommand('/scorers', 'scorersCommand'), new ScorersController())
+    .when(new Telegram.TextCommand('/standings', 'standingsCommand'), new StandingsController())
+    .when(new Telegram.TextCommand('/scorers', 'scorersCommand'), new ScorersController())
     .otherwise(new OtherwiseController());
-
-
 
 // Keep alive fix for heroku as heroku apps sleep after 1 hour of inactivity
 // This setInterval code snippet will ping the app every 10 mins
