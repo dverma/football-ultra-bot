@@ -103,7 +103,7 @@ function writeLiveMatches(competition, cb) {
 }
 function writeStandings(competition, cb){
     var url = API_ROOT_URL + 'competitions/' + competition + "/standings";
-    callAPI(url, filter, function (data) {
+    callAPI(url, null, function (data) {
         var redisKey = competition + "_live";
         var result = [];
         var standings = data.standings;
@@ -135,7 +135,7 @@ function writeStandings(competition, cb){
 
 function writeTopScorers(competition,cb){
     var url = API_ROOT_URL + 'competitions/' + competition + "/scorers";
-    callAPI(url, filter, function (data) {
+    callAPI(url, null, function (data) {
         var redisKey = competition + "_scorers";
         var result = [];
         var scorers = data.scorers;
