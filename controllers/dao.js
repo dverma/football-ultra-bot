@@ -98,7 +98,7 @@ function writeLiveMatches(competition, cb) {
             value = "No live matches going on."
         cb(value);
         //console.log(redisKey + " " + value);
-        client.set(redisKey, value, 'EX', 17);
+        client.set(redisKey, value, 'EX', 11);
     });
 }
 function writeStandings(competition, cb){
