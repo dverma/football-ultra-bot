@@ -9,4 +9,4 @@ List of commands:
 - /fixtures : list of fixtures from the current matchday
 - /standings : League table
 - /scorers : Top 10 goal scoreres in the league
-- /about
+- /about : About me!
